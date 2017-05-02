@@ -6,9 +6,9 @@ addpath('vbmprep');
 %  Analysis Mode
 %--------------------------------------------------------------------------
 do_Coreg      = 0;
-do_Segment    = 1;
+do_Segment    = 0;
 do_mkTemplate = 0;
-do_Normaliza  = 0;
+do_Normaliza  = 1;
 
 
 %  SPECIFY your own study
@@ -21,9 +21,7 @@ subjlist = T.subjname;
 nsubj = length(subjlist);
 
 FWHM = 6;
-params.fwhm = FWHM;
 params.prefix = 'smwr';  % from SPM DARTEL
-params.VBMpath = fullfile(PROJpath,'VBM');
 
 
 
@@ -59,7 +57,7 @@ end
 %--------------------------------------------------------------------------
 
 if do_mkTemplate
-    vbm_prep_mktemplate(studies.PROJpath,params);
+    vbm_prep_mktemplate(PROJpath,subjlist);
 end
 
 
@@ -68,7 +66,7 @@ end
 %--------------------------------------------------------------------------
 
 if do_Normaliza
-    vbm_prep_norm(studies);
+    vbm_prep_norm(PROJpath,subjlist,FWHM);
 end
 
 

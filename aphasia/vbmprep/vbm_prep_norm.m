@@ -1,39 +1,26 @@
-function vbm_prep_norm(studies)
+function vbm_prep_norm(PROJpath,subjlist,fwhm)
 
-%__________________________________________________________________________
-%
-% This batch script is to make easier your works.
-%
-% Copyright (c) 2014 Sunghyon Kyeong
-% Yonsei University College of Medicine
-%
-% vbm_prep_norm.m  October 24, 2014
-%__________________________________________________________________________
-
-clear jobs;
-
+clear matlabbatch;
 
 fprintf('\n-----------------------------------------------------------------------\n');
 fprintf('  DARTEL (Normalize to MNI Space ) ... \n');
 fprintf('-----------------------------------------------------------------------\n');
 
+fn_template = fullfile(PROJpath,'T1',subjlist{1},'Template_6.nii');
+matlabbatch{1}.spm.tools.dartel.mni_norm.template = {fn_template};
+for c=1:length(subjlist),
+    fnImages = cell(0);
+    fnFlowFields = spm_select('FPList',fullfile(PROJpath,'T1',subjlist{c}),'^u_rc1.*.nii');
+    fnImages{1} = spm_select('FPList',fullfile(PROJpath,'T1',subjlist{c}),'^rc1.*.nii');
+    fnImages{2} = spm_select('FPList',fullfile(PROJpath,'T1',subjlist{c}),'^rc2.*.nii');
+    fnImages{3} = spm_select('FPList',fullfile(PROJpath,'DTI',subjlist{c}),'^FA.*.nii');
+    matlabbatch{1}.spm.tools.dartel.mni_norm.data.subj(c).flowfield = {fnFlowFields};
+    matlabbatch{1}.spm.tools.dartel.mni_norm.data.subj(c).images = [fnImages'];
+end
 
-VBMpath=studies.VBMpath;
-fwhm=studies.fwhm;
+matlabbatch{1}.spm.tools.dartel.mni_norm.vox = [1 1 1];  % Normalization Voxel Size
+matlabbatch{1}.spm.tools.dartel.mni_norm.preserve = 1;   % Jacobian Modulation
+matlabbatch{1}.spm.tools.dartel.mni_norm.fwhm = [fwhm fwhm fwhm]; % Smoothing Kernel Size
 
-fnFlowFields = spm_select('FPList',fullfile(VBMpath,'gm'),'^u_rc1.*.nii');
-fnGM  = spm_select('FPList',fullfile(VBMpath,'gm'),'^rc1.*.nii');
-fnWM  = spm_select('FPList',fullfile(VBMpath,'wm'),'^rc2.*.nii');
-fnFA  = spm_select('FPList',fullfile(VBMpath,'FA'),'^FA.*.nii');
-
-jobs{1}.spm{1}.tools.dartel.mni_norm.template = {fullfile(VBMpath,'gm','Template_6.nii')};
-jobs{1}.spm{1}.tools.dartel.mni_norm.data.subjs.flowfields = cellstr(fnFlowFields);
-jobs{1}.spm{1}.tools.dartel.mni_norm.data.subjs.images = {cellstr(fnGM), cellstr(fnWM),cellstr(fnFA)}';
-% jobs{1}.spm{1}.tools.dartel.mni_norm.data.subjs.images = {cellstr(fnGM), cellstr(fnWM)}';
-jobs{1}.spm{1}.tools.dartel.mni_norm.preserve = 1;   % Jacobian Modulation
-jobs{1}.spm{1}.tools.dartel.mni_norm.vox = [1 1 1];  % Normalization Voxel Size
-jobs{1}.spm{1}.tools.dartel.mni_norm.fwhm = [fwhm fwhm fwhm]; % Smoothing Kernel Size
-
-
-% spm_jobman('interactive',jobs);  % open a GUI containing all the setup
-spm_jobman('run',jobs);
+% spm_jobman('interactive',matlabbatch);  % open a GUI containing all the setup
+spm_jobman('run',matlabbatch);
