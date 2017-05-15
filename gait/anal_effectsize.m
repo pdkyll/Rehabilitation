@@ -20,7 +20,7 @@ proj_path = '/Users/skyeong/Google Drive/Manuscripts/Subgroup - Gait pattern';
 %--------------------------------------------------------------------------
 fn_xls = fullfile(proj_path,'data','list_of_variables.xlsx');
 TT = readtable(fn_xls, 'Sheet' ,'New');
-analVars = TT.list_of_variables;  % sptmp
+% analVars = TT.list_of_variables;  % sptmp
 nvar = length(analVars);
 
 
@@ -40,20 +40,26 @@ skimData = table2array(T_skim);
 %--------------------------------------------------------------------------
 fn_csv = fullfile(proj_path,'subgroup',[saveName '.csv']);
 group = dlmread(fn_csv);
-pk = hist(group,1:6);
-groupid = find(pk>10);
+pk = hist(group,1:max(group));
+groupid = find(pk>12);
 ngrp = length(groupid);
 
+OUTPUT = zeros(nvar,ngrp*(ngrp-1)/2);
 fn_out = sprintf('~/Desktop/CohenD_%s.csv',saveName);
 fid = fopen(fn_out,'w+');
+for i=1:ngrp,
+    nsubg=sum(group==groupid(i));
+    fprintf(fid,'group %d (G%d):, %d\n',i,groupid(i),nsubg);
+end
 fprintf(fid,'group1, group2, t-val, corr p, cohen_d, analVar\n');
+cnt = 1;
 for ii=1:ngrp,
     i=groupid(ii);
     for jj=(ii+1):ngrp,
         j=groupid(jj);
-        dvals = [];
-        tvals = [];
-        pvals = [];
+        dvals = zeros(nvar,1);
+        tvals = zeros(nvar,1);
+        pvals = zeros(nvar,1);
         for v=1:nvar,
             dat1 = skimData(group==i,v);
             dat2 = skimData(group==j,v);
@@ -63,6 +69,7 @@ for ii=1:ngrp,
             tvals(v) = stat.tstat;
             pvals(v) = p*nvar;
         end
+        OUTPUT(:,cnt) = abs(dvals); cnt = cnt+1;
         [val,id]=sort(abs(dvals),'descend');
         fprintf(fid, 'G%d, G%d, %.2f, %.3f, %.2f, %s \n',i,j,tvals(id(1)), pvals(id(1)), dvals(id(1)),analVars{id(1)});
         fprintf(fid, 'G%d, G%d, %.2f, %.3f, %.2f, %s \n',i,j,tvals(id(2)), pvals(id(2)), dvals(id(2)),analVars{id(2)});
@@ -74,3 +81,6 @@ for ii=1:ngrp,
 end
 fclose(fid);
 
+fn_out2 = sprintf('~/Desktop/Dmat_%s.csv',saveName);
+dlmwrite(fn_out2,OUTPUT);
+figure; imagesc(OUTPUT'); colorbar; caxis([0 3]); axis image; axis off;
