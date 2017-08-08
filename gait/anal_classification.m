@@ -68,13 +68,11 @@ for c=1:nsubj
     SUB(c).id = c;
     
     dat = skimData(c,:);
-    
     rankvar = zeros(1,3);
     for g=1:ngrp,
         d = GRP(g).mu-dat;
         d = sqrt(d*d');  % square-root of sum of square
         rankvar(g) = d;
-        
     end
     [val,id] =min(rankvar);
     SUB(c).membership = id;
