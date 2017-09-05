@@ -157,7 +157,7 @@ for i=1:nbeh,
             
             % compare predicted and observed scores
             figure; plot(behav_pred_pos(i,:),all_behav(:,i)','r.');
-            title(['POS: ' varName{i} sprintf(' p=%.3f',P_pos(1,2))]);
+            title(['POS: ' varName{i} sprintf('r=%.2f, p=%.3f',R_pos(1,2),P_pos(1,2))]);
         end
     end
     if ~isempty(neg_mask),
@@ -173,7 +173,7 @@ for i=1:nbeh,
             
             % compare predicted and observed scores
             figure; plot(behav_pred_neg(i,:),all_behav(:,i)','b.');
-            title(['NEG: ' varName{i} sprintf(' p=%.3f',P_neg(1,2))]);
+            title(['NEG: ' varName{i} sprintf('r=%.2f, p=%.3f',R_neg(1,2),P_neg(1,2))]);
         end
     end
 end

@@ -6,10 +6,10 @@ addpath('/Volumes/JetDrive/data/RM_kdh/matlabscripts/gait');
 
 % Parameters
 % CL = 1; flipMode = 1; saveName = 'hemi';
-% CL = 4; flipMode = 3; saveName = 'pain_flip';
+CL = 4; flipMode = 3; saveName = 'pain_flip';
 % CL = 6; flipMode = 0; saveName = 'normal';
 % CL = 7; flipMode = 0; saveName = 'parkinson';
-CL = 8; flipMode = 3; saveName = 'nerve_root_flip';
+% CL = 8; flipMode = 3; saveName = 'nerve_root_flip';
 proj_path = '/Users/skyeong/Google Drive/Manuscripts/Subgroup - Gait pattern';
 
 % CL = 4; flipMode = 0; saveName = 'pain_unflip';
