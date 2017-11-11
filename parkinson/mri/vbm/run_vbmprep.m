@@ -1,11 +1,11 @@
 warning('off','all');
-addpath('vbmprep');
+tic;  ST = clock;
 
 
 
 %  Analysis Mode
 %--------------------------------------------------------------------------
-do_Segment    = 0;
+do_Segment    = 1;
 do_mkTemplate = 1;
 do_Normaliza  = 0;
 
@@ -19,26 +19,18 @@ subjlist = T.subjname;
 nsubj    = length(subjlist);
 Dx       = T.Dx;
 
-FWHM = 6;
-params.prefix = 'smwr';  % from SPM DARTEL
+FWHM     = 6;
 
-
-
-%  Initialize SPM job manager
-%--------------------------------------------------------------------------
-
-tic;  ST = clock;
 
 
 
 %  Segmentation
 %--------------------------------------------------------------------------
 if do_Segment,
-    DATApath = fullfile(PROJpath,'data_nc');
-    
-    parfor i=1:nsubj,
+    for i=1:nsubj,
         subjname = subjlist{i};
-        vbm_prep_segment(DATApath, subjname);
+        grpname = Dx{i};
+        vbm_prep_segment(PROJpath, subjname, grpname);
     end
 end
 

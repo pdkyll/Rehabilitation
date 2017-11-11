@@ -1,4 +1,4 @@
-function vbm_prep_segment(DATApath, subjname)
+function vbm_prep_segment(PROJpath,subjname,grpname)
 
 spm('Defaults', 'fMRI');
 
@@ -7,18 +7,18 @@ fprintf('\n---------------------------------------------------------------------
 fprintf('  %s,  Segmentation... \n', upper(subjname));
 fprintf('-----------------------------------------------------------------------\n');
 
+
+if strcmpi(grpname,'Control')
+    fn_anat = spm_select('FPList',fullfile(PROJpath,'data_nc',subjname,'anat'),'^hires.*.$');
+elseif strcmpi(grpname,'Parkinson')
+    fn_anat = spm_select('FPList',fullfile(PROJpath,'data_pt',subjname,'anat'),'^hires.*.$');
+end
+
+if isempty(fn_anat), return; end;
 spmtpm = fullfile(spm('dir'),'tpm');
 
-
-%  STRUCTURAL IMAGE
-%--------------------------------------------------------------------------
-
-mri_path = fullfile(DATApath, subjname, 'anat');
-s_mri = spm_select('ExtFPList',mri_path,'^hires.*.$');
-if isempty(s_mri), return; end;
-
 clear jobs;
-jobs{1}.spm.spatial.preproc.channel.vols = cellstr(s_mri);
+jobs{1}.spm.spatial.preproc.channel.vols = cellstr(fn_anat);
 jobs{1}.spm.spatial.preproc.channel.biasreg = 0.001;
 jobs{1}.spm.spatial.preproc.channel.biasfwhm = 60;
 jobs{1}.spm.spatial.preproc.channel.write = [0 0];
